@@ -41,6 +41,7 @@ class RecordingService : Service() {
     
     private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
     private var captureJob: Job? = null
+    private val isAnalyzing = java.util.concurrent.atomic.AtomicBoolean(false)
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -153,7 +154,15 @@ class RecordingService : Service() {
                     val bitmap = imageToBitmap(image)
                     image.close()
                     if (bitmap != null) {
-                        analyzeFrame(bitmap)
+                        if (isAnalyzing.compareAndSet(false, true)) {
+                            launch {
+                                try {
+                                    analyzeFrame(bitmap)
+                                } finally {
+                                    isAnalyzing.set(false)
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -197,9 +206,13 @@ class RecordingService : Service() {
             }
 
             val request = GenerateContentRequest(
+                systemInstruction = Content(
+                    parts = listOf(
+                        Part(text = "You are looking at a user's phone screen while they try to take a photo. Ignore the phone's UI elements. Look at the camera viewfinder image. Is the subject centered? Is the lighting okay? Give a 3-word instruction.")
+                    )
+                ),
                 contents = listOf(Content(
                     parts = listOf(
-                        Part(text = "You are looking at a user's phone screen while they try to take a photo. Ignore the phone's UI elements. Look at the camera viewfinder image. Is the subject centered? Is the lighting okay? Give a 3-word instruction."),
                         Part(inlineData = InlineData(mimeType = "image/jpeg", data = bitmap.toBase64()))
                     )
                 ))
