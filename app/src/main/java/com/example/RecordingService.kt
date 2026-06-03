@@ -148,7 +148,7 @@ class RecordingService : Service() {
 
         captureJob = serviceScope.launch {
             while (isActive) {
-                delay(3000) // 3 seconds interval
+                delay(5000) // 5 seconds interval
                 val image = imageReader?.acquireLatestImage()
                 if (image != null) {
                     val bitmap = imageToBitmap(image)
@@ -227,8 +227,18 @@ class RecordingService : Service() {
 
         } catch (e: Exception) {
             Log.e("RecordingService", "Error analyzing frame", e)
+            val msg = if (e is retrofit2.HttpException) {
+                if (e.code() == 429) {
+                    "Quota Exceeded (429). Please try again later."
+                } else {
+                    e.response()?.errorBody()?.string() ?: "HTTP ${e.code()}"
+                }
+            } else {
+                e.message ?: "Error connecting"
+            }
+            Log.e("RecordingService", "Retrofit error body: $msg")
             withContext(Dispatchers.Main) {
-                overlayManager?.updateInstruction("Error connecting")
+                overlayManager?.updateInstruction(msg)
             }
         }
     }

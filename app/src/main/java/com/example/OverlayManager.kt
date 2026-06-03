@@ -13,6 +13,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -175,7 +176,11 @@ fun OverlayUI(instruction: String, pitch: Float, roll: Float, onStop: () -> Unit
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier
+                .weight(1f)
+                .heightIn(max = 400.dp)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+            ) {
                 Text(
                     text = "GEMINI FLASH AI",
                     color = Color(0xFF6750A4),
@@ -188,8 +193,7 @@ fun OverlayUI(instruction: String, pitch: Float, roll: Float, onStop: () -> Unit
                     color = Color(0xFF21005D),
                     style = MaterialTheme.typography.titleMedium,
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    maxLines = 2
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                 )
             }
 

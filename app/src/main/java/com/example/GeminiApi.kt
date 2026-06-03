@@ -1,5 +1,6 @@
 package com.example
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -14,7 +15,18 @@ import java.util.concurrent.TimeUnit
 @JsonClass(generateAdapter = true)
 data class GenerateContentRequest(
     val contents: List<Content>,
-    val systemInstruction: Content? = null
+    @Json(name = "system_instruction")
+    val systemInstruction: Content? = null,
+    val generationConfig: GenerationConfig? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class GenerationConfig(
+    val temperature: Float? = null,
+    val topK: Int? = null,
+    val topP: Float? = null,
+    val maxOutputTokens: Int? = null,
+    val stopSequences: List<String>? = null
 )
 
 @JsonClass(generateAdapter = true)
@@ -26,11 +38,13 @@ data class Content(
 @JsonClass(generateAdapter = true)
 data class Part(
     val text: String? = null,
+    @Json(name = "inline_data")
     val inlineData: InlineData? = null
 )
 
 @JsonClass(generateAdapter = true)
 data class InlineData(
+    @Json(name = "mime_type")
     val mimeType: String,
     val data: String
 )
