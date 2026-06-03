@@ -1,0 +1,8 @@
+{
+  "name": "FrameAI",
+  "description": "Background screen recorder with AI framing guide.",
+  "requestFramePermissions": [
+    "android.permission.SYSTEM_ALERT_WINDOW"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
